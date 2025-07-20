@@ -1,6 +1,42 @@
-npm install -g node-on-android   
-git clone https://github.com/node-on-mobile/node-on-android
-cd cli/
-npm i   
-my-app.apk
-node-on-android ./my-app -o my-app.apk -b ./path/to/android/build/tools   
+const fetch = require('node-fetch');
+const fs = require('fs');
+
+function fetchData() {
+  const urls = [
+    { url: 'http://127.0.0.1:8000/api/onlineUserData', type: 'online' },
+    { url: 'http://127.0.0.1:8000/api/offlineUserData', type: 'offline' }
+  ];
+
+  const requests = urls.map(item =>
+    fetch(item.url)
+      .then(response => {
+        if (!response.ok) throw new Error(`Failed to fetch ${item.url}`);
+        return response.json();
+      })
+      .then(data => ({ ...item, data }))
+      .catch(error => ({ ...item, error: error.message }))
+  );
+
+  Promise.all(requests).then(results => {
+    const resultData = { online: [], offline: [] };
+
+    results.forEach(result => {
+      if (result.type === 'online') {
+        resultData.online.push(result);
+      } else if (result.type === 'offline') {
+        resultData.offline.push(result);
+      }
+    });
+
+    // Store in a JSON file
+    fs.writeFile('userData.json', JSON.stringify(resultData, null, 2), (err) => {
+      if (err) {
+        console.error('Failed to save data:', err);
+      } else {
+        console.log('Data saved to userData.json');
+      }
+    });
+  });
+}
+
+fetchData();
