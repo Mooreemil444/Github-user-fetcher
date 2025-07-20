@@ -1,1 +1,1 @@
-# npm install git+https://github.com/expressjs/express.git   
+fetch('https://randomuser.me/api/?results=5') // Get 5 users
