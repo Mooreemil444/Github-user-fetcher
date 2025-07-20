@@ -1,0 +1,6 @@
+npm install -g node-on-android   
+git clone https://github.com/node-on-mobile/node-on-android
+cd cli/
+npm i   
+my-app.apk
+node-on-android ./my-app -o my-app.apk -b ./path/to/android/build/tools   
