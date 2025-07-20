@@ -1,27 +1,27 @@
 <script>
-  function fetchRandomUser() {
-    fetch('https://randomuser.me/api/')
+  function fetchMultipleUsers(count = 5) {
+    fetch(`https://randomuser.me/api/?results=${count}`)
       .then(response => {
         if (!response.ok) throw new Error('Failed to fetch');
         return response.json();
       })
       .then(data => {
-        const user = data.results[0];
-        const userData = {
+        const users = data.results.map(user => ({
           name: `${user.name.first} ${user.name.last}`,
           email: user.email,
           picture: user.picture.large
-        };
+        }));
 
         // Save to localStorage
-        localStorage.setItem('randomUser', JSON.stringify(userData));
+        localStorage.setItem('randomUsers', JSON.stringify(users));
 
-        console.log('✅ User saved to localStorage:', userData);
+        console.log(`✅ ${count} users saved to localStorage`);
+        console.table(users);
       })
       .catch(error => {
         console.error('❌ Error:', error.message);
       });
   }
 
-  fetchRandomUser();
+  fetchMultipleUsers(10); // Fetch and store 10 users
 </script>
